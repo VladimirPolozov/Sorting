@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Arrangments.Properties
+namespace Sorting.Properties
 {
 
 
