@@ -30,8 +30,8 @@
         <CheckBox Grid.Column="0" Grid.Row="4" VerticalContentAlignment="Center" Content="Шейкерная" FontFamily="Montserrat"></CheckBox>
         <CheckBox Grid.Column="0" Grid.Row="5" VerticalContentAlignment="Center" Content="Bogo" FontFamily="Montserrat"></CheckBox>
         <StackPanel Grid.Column="0" Grid.Row="6">
-          <RadioButton Margin="0 0 0 2" VerticalContentAlignment="Center" Content="По возрастанию" FontFamily="Montserrat"></RadioButton>
-          <RadioButton  VerticalContentAlignment="Center" Content="По убыванию" FontFamily="Montserrat"></RadioButton>
+          <RadioButton Margin="0 0 0 2" VerticalContentAlignment="Center" Content="По возрастанию" FontFamily="Montserrat" FontSize="12"></RadioButton>
+          <RadioButton  VerticalContentAlignment="Center" Content="По убыванию" FontFamily="Montserrat" FontSize="12"></RadioButton>
         </StackPanel>
         <TextBlock Grid.Column="1" Grid.Row="0" TextAlignment="Center" FontSize="14" FontWeight="SemiBold" FontFamily="Montserrat">Итерации</TextBlock>
         <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" FontSize="12" FontFamily="Montserrat"></TextBlock>

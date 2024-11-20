@@ -10,7 +10,7 @@ namespace Sorting
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ArrangmentsViewModel();
+            DataContext = new SortingViewModel();
         }
     }
 
