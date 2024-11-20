@@ -22,6 +22,48 @@ namespace Sorting
 
     public class SortingViewModel : INotifyPropertyChanged
     {
+        private bool isBubbleSortingChecked;
+        private string resultOfBubbleSorting;
+
+        public bool IsBubbleSortingChecked
+        {
+            get => isBubbleSortingChecked;
+            set
+            {
+                isBubbleSortingChecked = value;
+                OnPropertyChanged(nameof(IsBubbleSortingChecked));
+            }
+        }
+
+        public string ResultOfBubbleSorting
+        {
+            get => resultOfBubbleSorting;   
+            set
+            {
+                resultOfBubbleSorting = value;
+                OnPropertyChanged(nameof(ResultOfBubbleSorting));
+            }
+        }
+
+        private void Sort() {
+            if (IsBubbleSortingChecked) {
+                ResultOfBubbleSorting = "True";
+            } else {
+                ResultOfBubbleSorting = "False";
+            }
+        }
+
+        // Команды для вызова метода
+        public ICommand SortCommand { get; }
+
+        public SortingViewModel()
+        {
+            // очистить данные
+            // ClearData();
+
+            // Привязываем команды к методу
+            SortCommand = new RelayCommand(_ => Sort());
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
