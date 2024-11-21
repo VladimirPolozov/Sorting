@@ -159,20 +159,23 @@ namespace Sorting
             }
         }
         
-        private void Generate()
+        public void Generate()
         {
-            int length = ArrayLength;
             var inputArrayLengthWindow = new InputArrayLengthWindow();
-            inputArrayLengthWindow.ShowDialog();
-            
-            var numbers = new int[length];
-            var rnd = new Random();
-            for (var i = 0; i < length; ++i)
+
+            if (inputArrayLengthWindow.ShowDialog() == true)
             {
-                numbers[i] = rnd.Next(0, 100);
-            }
+                int length = inputArrayLengthWindow.ArrayLength ?? 0;
             
-            UserInput = string.Join(" ", numbers);
+                var numbers = new int[length];
+                var rnd = new Random();
+                for (var i = 0; i < length; ++i)
+                {
+                    numbers[i] = rnd.Next(0, 100);
+                }
+            
+                UserInput = string.Join(" ", numbers);
+            }
         }
 
         private void Sort() {

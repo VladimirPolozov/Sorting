@@ -3,19 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:Sorting"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sorting="clr-namespace:Sorting" d:DataContext="{d:DesignInstance Type=sorting:SortingViewModel}"
-        mc:Ignorable="d"
         Title="Введите длину массива" Height="125" Width="250">
     <Grid>
         <StackPanel Width="200px" Height="75px">
             <TextBlock FontSize="12px" FontFamily="Montserrat" FontWeight="SemiBold" Text="Введите длину массива:" Margin="0 0 0 5px"/>
-            <TextBox Text="{Binding ArrayLength, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 10px" FontFamily="Montserrat"/>
+            <TextBox x:Name="ArrayLengthTextBox" Margin="0 0 0 10px" FontFamily="Montserrat"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button Margin="0 0 5px 0" Grid.Column="0" IsCancel="True" FontWeight="Medium" Background="#24A1DE" Foreground="White" BorderThickness="0">Отмена</Button>
+                <!-- <Button Margin="0 0 5px 0" Grid.Column="0" IsCancel="True" FontWeight="Medium" Background="#24A1DE" Foreground="White" BorderThickness="0">Отмена</Button> -->
                 <Button Margin="5px 0 0 0" Grid.Column="1" Click="Accept_Click"  IsDefault="True" FontWeight="Medium" Background="#24A1DE" Foreground="White" BorderThickness="0">OK</Button>
             </Grid>
         </StackPanel>
