@@ -20,7 +20,7 @@ namespace Sorting
 
     public class SortingModel
     {
-        public static (int[], int, int) BubbleSort(int[] array, bool isAscendingSortChecked, int countOfIterations)
+        public static (int[], int, double) BubbleSort(int[] array, bool isAscendingSortChecked, int countOfIterations)
         {
             var sumOfIterations = 0;
             var stopwatch = Stopwatch.StartNew();
@@ -52,7 +52,7 @@ namespace Sorting
             stopwatch.Stop();
             var averageTime = new TimeSpan(stopwatch.ElapsedTicks / countOfIterations);
 
-            return (array, sumOfIterations / countOfIterations, (int)averageTime.TotalMilliseconds);
+            return (array, sumOfIterations / countOfIterations, averageTime.TotalMilliseconds);
         }
     }
 
@@ -64,13 +64,16 @@ namespace Sorting
 
         private int _averageCountOfBubbleSortingIterations;
         
-        private int _averageTimeOfBubbleSortingExecution;
+        private double _averageTimeOfBubbleSortingExecution;
 
         private bool _isAscendingSortChecked = true;
         
         private string _userInput;
-        private int _countOfTests;
+        private int _countOfTests = 1;
+        
         private int _arrayLength;
+        private int _minValue;
+        private int _maxValue;
         
         // чек-боксы выбора методов сортировок
         public bool IsBubbleSortingChecked
@@ -117,7 +120,7 @@ namespace Sorting
         }
         
         // среднее время выполнения сортировки
-        public int AverageTimeOfBubbleSortingExecution
+        public double AverageTimeOfBubbleSortingExecution
         {
             get => _averageTimeOfBubbleSortingExecution;
             set
@@ -149,6 +152,7 @@ namespace Sorting
             }
         }
         
+        // длина генерируемого массива
         public int ArrayLength
         {
             get => _arrayLength;
@@ -159,19 +163,43 @@ namespace Sorting
             }
         }
         
+        // минимальное значение генерируемого массива
+        public int MinValue
+        {
+            get => _minValue;
+            set
+            {
+                _minValue = value;
+                OnPropertyChanged(nameof(MinValue));
+            }
+        }
+        
+        // максимальное значение генерируемого массива
+        public int MaxValue
+        {
+            get => _maxValue;
+            set
+            {
+                _maxValue = value;
+                OnPropertyChanged(nameof(MaxValue));
+            }
+        }
+        
         public void Generate()
         {
             var inputArrayLengthWindow = new InputArrayLengthWindow();
 
             if (inputArrayLengthWindow.ShowDialog() == true)
             {
-                int length = inputArrayLengthWindow.ArrayLength ?? 0;
+                int length = inputArrayLengthWindow.ArrayLength ?? 100;
+                int minValue = inputArrayLengthWindow.MinValue ?? 0;
+                int maxValue = inputArrayLengthWindow.MaxValue ?? 100;
             
                 var numbers = new int[length];
                 var rnd = new Random();
                 for (var i = 0; i < length; ++i)
                 {
-                    numbers[i] = rnd.Next(0, 100);
+                    numbers[i] = rnd.Next(minValue, maxValue);
                 }
             
                 UserInput = string.Join(" ", numbers);

@@ -3,11 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:Sorting"
-        Title="Введите длину массива" Height="125" Width="250">
+        Title="Введите длину массива" Height="250" Width="250">
     <Grid>
-        <StackPanel Width="200px" Height="75px">
-            <TextBlock FontSize="12px" FontFamily="Montserrat" FontWeight="SemiBold" Text="Введите длину массива:" Margin="0 0 0 5px"/>
-            <TextBox x:Name="ArrayLengthTextBox" Margin="0 0 0 10px" FontFamily="Montserrat"/>
+        <StackPanel Width="200px" VerticalAlignment="Center">
+            <TextBlock FontSize="12px" FontFamily="Montserrat" FontWeight="SemiBold" Text="Длина массива" Margin="0 0 0 5px"/>
+            <TextBox x:Name="ArrayLengthTextBox" Margin="0 0 0 10px" FontFamily="Montserrat">100</TextBox>
+            <TextBlock FontSize="12px" FontFamily="Montserrat" FontWeight="SemiBold" Text="Минимальное значение" Margin="0 0 0 5px"/>
+            <TextBox x:Name="MinValueTextBox" Margin="0 0 0 10px" FontFamily="Montserrat">-100</TextBox>
+            <TextBlock FontSize="12px" FontFamily="Montserrat" FontWeight="SemiBold" Text="Максимальное значение" Margin="0 0 0 5px"/>
+            <TextBox x:Name="MaxValueTextBox" Margin="0 0 0 10px" FontFamily="Montserrat">100</TextBox>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
