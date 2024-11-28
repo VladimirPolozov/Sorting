@@ -23,34 +23,46 @@
           <ColumnDefinition></ColumnDefinition>
           <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0" Margin="0 0 0 20px" VerticalAlignment="Center" TextAlignment="Center" FontSize="14" FontWeight="SemiBold" FontFamily="Montserrat">Тип сортировки</TextBlock>
+        <TextBlock Grid.Column="0" Grid.Row="0" Margin="0 0 0 20px" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" FontFamily="Montserrat">Тип сортировки</TextBlock>
         <CheckBox Grid.Column="0" Grid.Row="1" VerticalContentAlignment="Center" Content="Пузырьковая" FontFamily="Montserrat" IsChecked="{Binding IsBubbleSortingChecked, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
-        <CheckBox Grid.Column="0" Grid.Row="2" VerticalContentAlignment="Center" Content="Вставкой" FontFamily="Montserrat"></CheckBox>
-        <CheckBox Grid.Column="0" Grid.Row="3" VerticalContentAlignment="Center" Content="Быстрая" FontFamily="Montserrat"></CheckBox>
-        <CheckBox Grid.Column="0" Grid.Row="4" VerticalContentAlignment="Center" Content="Шейкерная" FontFamily="Montserrat"></CheckBox>
-        <CheckBox Grid.Column="0" Grid.Row="5" VerticalContentAlignment="Center" Content="Bogo" FontFamily="Montserrat"></CheckBox>
+        <CheckBox Grid.Column="0" Grid.Row="2" VerticalContentAlignment="Center" Content="Вставкой" FontFamily="Montserrat" IsChecked="{Binding IsInsertionSortingChecked, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
+        <CheckBox Grid.Column="0" Grid.Row="3" VerticalContentAlignment="Center" Content="Быстрая" FontFamily="Montserrat" IsChecked="{Binding IsQuickSortingChecked, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
+        <CheckBox Grid.Column="0" Grid.Row="4" VerticalContentAlignment="Center" Content="Шейкерная" FontFamily="Montserrat" IsChecked="{Binding IsShakerSortingChecked, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
+        <CheckBox Grid.Column="0" Grid.Row="5" VerticalContentAlignment="Center" Content="Bogo" FontFamily="Montserrat" IsChecked="{Binding IsBogoSortingChecked, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
         <StackPanel Grid.Column="0" Grid.Row="6">
           <RadioButton Margin="0 0 0 2" VerticalContentAlignment="Center" Content="По возрастанию" FontFamily="Montserrat" FontSize="12" IsChecked="{Binding IsAscendingSortChecked, UpdateSourceTrigger=PropertyChanged}"></RadioButton>
           <RadioButton  VerticalContentAlignment="Center" Content="По убыванию" FontFamily="Montserrat" FontSize="12"></RadioButton>
         </StackPanel>
         <TextBlock Grid.Column="1" Grid.Row="0" TextAlignment="Center" FontSize="14" FontWeight="SemiBold" FontFamily="Montserrat" TextWrapping="Wrap">Среднее количество итераций</TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat" Text="{Binding AverageCountOfBubbleSortingIterations}"></TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat"></TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat"></TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat"></TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat"></TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat" Text="{Binding AverageCountOfBubbleSortingIterations}"/>
+        <TextBlock Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat" Text="{Binding AverageCountOfInsertionSortingIterations}"/>
+        <TextBlock Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat" Text="{Binding AverageCountOfQuickSortingIterations}"/>
+        <TextBlock Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat" Text="{Binding AverageCountOfShakerSortingIterations}"/>
+        <TextBlock Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat" Text="{Binding AverageCountOfBogoSortingIterations}"/>
         <TextBlock Grid.Column="2" Grid.Row="0" TextAlignment="Center" FontSize="14" FontWeight="SemiBold" FontFamily="Montserrat" TextWrapping="Wrap">Среднее время выполнения</TextBlock>
         <TextBlock Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat" Text="{Binding AverageTimeOfBubbleSortingExecution}"></TextBlock>
-        <TextBlock Grid.Column="2" Grid.Row="2" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat"></TextBlock>
-        <TextBlock Grid.Column="2" Grid.Row="3" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat"></TextBlock>
-        <TextBlock Grid.Column="2" Grid.Row="4" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat"></TextBlock>
-        <TextBlock Grid.Column="2" Grid.Row="5" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat"></TextBlock>
+        <TextBlock Grid.Column="2" Grid.Row="2" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat" Text="{Binding AverageTimeOfInsertionSortingExecution}"/>
+        <TextBlock Grid.Column="2" Grid.Row="3" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat" Text="{Binding AverageTimeOfQuickSortingExecution}"/>
+        <TextBlock Grid.Column="2" Grid.Row="4" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat" Text="{Binding AverageTimeOfShakerSortingExecution}"/>
+        <TextBlock Grid.Column="2" Grid.Row="5" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontFamily="Montserrat" Text="{Binding AverageTimeOfBogoSortingExecution}"/>
         <TextBlock Grid.Column="3" Grid.Row="0" TextAlignment="Center" FontSize="14" FontWeight="SemiBold" FontFamily="Montserrat">Результат</TextBlock>
         <ScrollViewer Grid.Column="3" Grid.Row="1">
           <TextBlock TextWrapping="Wrap" FontFamily="Montserrat" Text="{Binding ResultOfBubbleSorting, UpdateSourceTrigger=PropertyChanged}"></TextBlock>
         </ScrollViewer>
+        <ScrollViewer Grid.Column="3" Grid.Row="2">
+          <TextBlock TextWrapping="Wrap" FontFamily="Montserrat" Text="{Binding ResultOfInsertionSorting, UpdateSourceTrigger=PropertyChanged}"></TextBlock>
+        </ScrollViewer>
+        <ScrollViewer Grid.Column="3" Grid.Row="3">
+          <TextBlock TextWrapping="Wrap" FontFamily="Montserrat" Text="{Binding ResultOfQuickSorting, UpdateSourceTrigger=PropertyChanged}"></TextBlock>
+        </ScrollViewer>
+        <ScrollViewer Grid.Column="3" Grid.Row="4">
+          <TextBlock TextWrapping="Wrap" FontFamily="Montserrat" Text="{Binding ResultOfShakerSorting, UpdateSourceTrigger=PropertyChanged}"></TextBlock>
+        </ScrollViewer>
+        <ScrollViewer Grid.Column="3" Grid.Row="5">
+          <TextBlock TextWrapping="Wrap" FontFamily="Montserrat" Text="{Binding ResultOfBogoSorting, UpdateSourceTrigger=PropertyChanged}"></TextBlock>
+        </ScrollViewer>
       </Grid>
-      <TextBlock Margin="0 0 0 8" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" FontFamily="Montserrat">Ввод</TextBlock>
+      <TextBlock Margin="0 0 0 8" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" FontFamily="Montserrat">Ввод (через пробел)</TextBlock>
       <ScrollViewer>
         <TextBox Height="100px" TextWrapping="Wrap" FontSize="12" FontFamily="Montserrat" Text="{Binding UserInput, UpdateSourceTrigger=PropertyChanged}"></TextBox>
       </ScrollViewer>
@@ -62,7 +74,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Orientation="Vertical">
           <TextBlock Margin="0 0 0 5px" FontSize="12px" FontFamily="Montserrat" FontWeight="Semibold">Количество тестов</TextBlock>
-          <TextBox Height="25px" VerticalContentAlignment="Center" FontSize="12px" FontFamily="Montserrat" Text="{Binding CountOfTests, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+          <TextBox Height="25px" VerticalContentAlignment="Center" FontSize="12px" FontFamily="Montserrat" Text="{Binding CountOfTests, UpdateSourceTrigger=PropertyChanged}" InputScope="Number"></TextBox>
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
           <Button Width="150px" Height="25px" Margin="0 0 10px 0" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontWeight="Medium" Background="#24A1DE" Foreground="White" BorderThickness="0" Command="{Binding GenerateCommand}">Сгенерировать</Button>

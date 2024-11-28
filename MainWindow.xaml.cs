@@ -20,62 +20,203 @@ namespace Sorting
 
     public class SortingModel
     {
-        public static (int[], int, double) BubbleSort(int[] array, bool isAscendingSortChecked, int countOfIterations)
+        // Сортировка пузырьком
+        public static (int[], double) BubbleSort(int[] array, bool isAscendingSortChecked)
         {
-            var sumOfIterations = 0;
             var stopwatch = Stopwatch.StartNew();
-            for (var iterationOfSorting = 0; iterationOfSorting < countOfIterations; ++iterationOfSorting)
+            for (var i = 0; i < array.Length; ++i)
             {
-                var iterations = 0;
-                for (var i = 0; i < array.Length; i++)
+                for (var j = 0; j < array.Length - 1; ++j)
                 {
-                    for (var j = 0; j < array.Length - 1; j++)
+                    if (array[j] > array[j + 1] && isAscendingSortChecked)
                     {
-                        if (array[j] > array[j + 1] && isAscendingSortChecked)
+                        (array[j], array[j + 1]) = (array[j + 1], array[j]);
+                    }
+                    else
+                    {
+                        if (array[j] < array[j + 1] && !isAscendingSortChecked)
                         {
-                            ++iterations;
                             (array[j], array[j + 1]) = (array[j + 1], array[j]);
-                        }
-                        else
-                        {
-                            if (array[j] < array[j + 1] && !isAscendingSortChecked)
-                            {
-                                ++iterations;
-                                (array[j], array[j + 1]) = (array[j + 1], array[j]);
-                            }
                         }
                     }
                 }
-                sumOfIterations += iterations;
             }
             
             stopwatch.Stop();
-            var averageTime = new TimeSpan(stopwatch.ElapsedTicks / countOfIterations);
+            return (array, new TimeSpan(stopwatch.ElapsedTicks).TotalMilliseconds);
+        }
+        
+        // Сортировка вставками
+        public static (int[], int, double) InsertionSort(int[] array, bool isAscendingSortChecked)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var iterations = 0;
+            for (var i = 1; i < array.Length; ++i)
+            {
+                var current = array[i];
+                var j = i - 1;
+                while (j >= 0 && (isAscendingSortChecked ? array[j] > current : array[j] < current))
+                {
+                    ++iterations;
+                    array[j + 1] = array[j];
+                    --j;
+                }
+                array[j + 1] = current;
+            }
+            
+            stopwatch.Stop();
+            return (array, iterations, new TimeSpan(stopwatch.ElapsedTicks).TotalMilliseconds);
+        }
+        
+        // Быстрая сортировка
+        public static (int[], int, double) QuickSort(int[] array, bool isAscendingSortChecked)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var iterations = 0;
+            QuickSorting(array, 0, array.Length - 1, isAscendingSortChecked, ref iterations);
+            
+            stopwatch.Stop();
+            return (array, iterations, new TimeSpan(stopwatch.ElapsedTicks).TotalMilliseconds);
+        }
+        
+        // Метод быстрой сортировки
+        private static void QuickSorting(int[] array, int left, int right, bool isAscendingSortChecked, ref int iterations)
+        {
+            if (left < right)
+            {
+                var pivot = Partition(array, left, right, isAscendingSortChecked, ref iterations);
+                QuickSorting(array, left, pivot - 1, isAscendingSortChecked, ref iterations);
+                QuickSorting(array, pivot + 1, right, isAscendingSortChecked, ref iterations);
+            }
+        }
+        
+        // Метод разделения массива
+        private static int Partition(int[] array, int left, int right, bool isAscendingSortChecked, ref int iterations)
+        {
+            var pivot = array[left];
+            while (true)
+            {
+                while (isAscendingSortChecked ? array[left] < pivot : array[left] > pivot)
+                {
+                    ++left;
+                    ++iterations;
+                }
+                while (isAscendingSortChecked ? array[right] > pivot : array[right] < pivot)
+                {
+                    --right;
+                    ++iterations;
+                }
+                if (left >= right)
+                {
+                    return right;
+                }
+                (array[left], array[right]) = (array[right], array[left]);
+                ++iterations;
+                ++left;
+                --right;
+            }
+        }
+        
+        // Шейкерная сортировка
+        public static (int[], int, double) ShakerSort(int[] array, bool isAscendingSortChecked)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var iterations = 0;
+            bool swapped;
+            int start = 0;
+            int end = array.Length - 1;
 
-            return (array, sumOfIterations / countOfIterations, averageTime.TotalMilliseconds);
+            do
+            {
+                swapped = false;
+
+                // Проход слева направо
+                for (int i = start; i < end; ++i)
+                {
+                    if ((array[i] > array[i + 1] && isAscendingSortChecked) || 
+                        (array[i] < array[i + 1] && !isAscendingSortChecked))
+                    {
+                        (array[i], array[i + 1]) = (array[i + 1], array[i]);
+                        swapped = true;
+                        ++iterations;
+                    }
+                }
+                --end;
+
+                // Проход справа налево
+                for (int i = end; i > start; --i)
+                {
+                    if ((array[i - 1] > array[i] && isAscendingSortChecked) || 
+                        (array[i - 1] < array[i] && !isAscendingSortChecked))
+                    {
+                        (array[i - 1], array[i]) = (array[i], array[i - 1]);
+                        swapped = true;
+                        ++iterations;
+                    }
+                }
+                ++start;
+            }
+            while (swapped);
+
+            stopwatch.Stop();
+            return (array, iterations, new TimeSpan(stopwatch.ElapsedTicks).TotalMilliseconds);
+        }
+
+
+        // Bogo-сортировка
+        public static (int[], int, double) BogoSort(int[] array, bool isAscendingSortChecked)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var iterations = 0;
+            while (!IsSorted(array, isAscendingSortChecked))
+            {
+                ++iterations;
+                Shuffle(array);
+                if (iterations > 1000)
+                {
+                    break;
+                }
+            }
+            
+            stopwatch.Stop();
+            return (array, iterations, new TimeSpan(stopwatch.ElapsedTicks).TotalMilliseconds);
+        }
+        
+        // Метод проверки отсортированности массива
+        private static bool IsSorted(int[] array, bool isAscendingSortChecked)
+        {
+            for (var i = 0; i < array.Length - 1; ++i)
+            {
+                if (isAscendingSortChecked ? array[i] > array[i + 1] : array[i] < array[i + 1])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        
+        // Метод перемешивания массива
+        private static void Shuffle(int[] array)
+        {
+            var random = new Random();
+            for (var i = 0; i < array.Length; ++i)
+            {
+                var j = random.Next(i, array.Length);
+                (array[i], array[j]) = (array[j], array[i]);
+            }
         }
     }
 
-    public class SortingViewModel : INotifyPropertyChanged
+        public class SortingViewModel : INotifyPropertyChanged
     {
-        private bool _isBubbleSortingChecked;
-        
-        private string _resultOfBubbleSorting;
-
-        private int _averageCountOfBubbleSortingIterations;
-        
-        private double _averageTimeOfBubbleSortingExecution;
-
-        private bool _isAscendingSortChecked = true;
-        
-        private string _userInput;
-        private int _countOfTests = 1;
-        
-        private int _arrayLength;
-        private int _minValue;
-        private int _maxValue;
-        
         // чек-боксы выбора методов сортировок
+        private bool _isBubbleSortingChecked;
+        private bool _isInsertionSortingChecked;
+        private bool _isQuickSortingChecked;
+        private bool _isShakerSortingChecked;
+        private bool _isBogoSortingChecked;
+        
         public bool IsBubbleSortingChecked
         {
             get => _isBubbleSortingChecked;
@@ -85,30 +226,54 @@ namespace Sorting
                 OnPropertyChanged(nameof(IsBubbleSortingChecked));
             }
         }
+        
+        public bool IsInsertionSortingChecked
+        {
+            get => _isInsertionSortingChecked;
+            set
+            {
+                _isInsertionSortingChecked = value;
+                OnPropertyChanged(nameof(IsInsertionSortingChecked));
+            }
+        }
+        
+        public bool IsQuickSortingChecked
+        {
+            get => _isQuickSortingChecked;
+            set
+            {
+                _isQuickSortingChecked = value;
+                OnPropertyChanged(nameof(IsQuickSortingChecked));
+            }
+        }
 
-        // текст результата сортировки
-        public string ResultOfBubbleSorting
+        public bool IsShakerSortingChecked
         {
-            get => _resultOfBubbleSorting;   
+            get => _isShakerSortingChecked;
             set
             {
-                _resultOfBubbleSorting = value;
-                OnPropertyChanged(nameof(ResultOfBubbleSorting));
+                _isShakerSortingChecked = value;
+                OnPropertyChanged(nameof(IsShakerSortingChecked));
             }
         }
-        
-        // выбор порядка сортировки
-        public bool IsAscendingSortChecked
+
+        public bool IsBogoSortingChecked
         {
-            get => _isAscendingSortChecked;
+            get => _isBogoSortingChecked;
             set
             {
-                _isAscendingSortChecked = value;
-                OnPropertyChanged(nameof(IsAscendingSortChecked));
+                _isBogoSortingChecked = value;
+                OnPropertyChanged(nameof(IsBogoSortingChecked));
             }
         }
-        
+
         // среднее количество итераций сортировки
+        private int _averageCountOfBubbleSortingIterations;
+        private int _averageCountOfInsertionSortingIterations;
+        private int _averageCountOfQuickSortingIterations;
+        private int _averageCountOfShakerSortingIterations;
+        private int _averageCountOfBogoSortingIterations;
+        
         public int AverageCountOfBubbleSortingIterations
         {
             get => _averageCountOfBubbleSortingIterations;
@@ -119,7 +284,53 @@ namespace Sorting
             }
         }
         
+        public int AverageCountOfInsertionSortingIterations
+        {
+            get => _averageCountOfInsertionSortingIterations;
+            set
+            {
+                _averageCountOfInsertionSortingIterations = value;
+                OnPropertyChanged(nameof(AverageCountOfInsertionSortingIterations));
+            }
+        }
+        
+        public int AverageCountOfQuickSortingIterations
+        {
+            get => _averageCountOfQuickSortingIterations;
+            set
+            {
+                _averageCountOfQuickSortingIterations = value;
+                OnPropertyChanged(nameof(AverageCountOfQuickSortingIterations));
+            }
+        }
+
+        public int AverageCountOfShakerSortingIterations
+        {
+            get => _averageCountOfShakerSortingIterations;
+            set
+            {
+                _averageCountOfShakerSortingIterations = value;
+                OnPropertyChanged(nameof(AverageCountOfShakerSortingIterations));
+            }
+        }
+        
+        public int AverageCountOfBogoSortingIterations
+        {
+            get => _averageCountOfBogoSortingIterations;
+            set
+            {
+                _averageCountOfBogoSortingIterations = value;
+                OnPropertyChanged(nameof(AverageCountOfBogoSortingIterations));
+            }
+        }
+
         // среднее время выполнения сортировки
+        private double _averageTimeOfBubbleSortingExecution;
+        private double _averageTimeOfInsertionSortingExecution;
+        private double _averageTimeOfQuickSortingExecution;
+        private double _averageTimeOfShakerSortingExecution;
+        private double _averageTimeOfBogoSortingExecution;
+        
         public double AverageTimeOfBubbleSortingExecution
         {
             get => _averageTimeOfBubbleSortingExecution;
@@ -129,8 +340,118 @@ namespace Sorting
                 OnPropertyChanged(nameof(AverageTimeOfBubbleSortingExecution));
             }
         }
+        
+        public double AverageTimeOfInsertionSortingExecution
+        {
+            get => _averageTimeOfInsertionSortingExecution;
+            set
+            {
+                _averageTimeOfInsertionSortingExecution = value;
+                OnPropertyChanged(nameof(AverageTimeOfInsertionSortingExecution));
+            }
+        }
+        
+        public double AverageTimeOfQuickSortingExecution
+        {
+            get => _averageTimeOfQuickSortingExecution;
+            set
+            {
+                _averageTimeOfQuickSortingExecution = value;
+                OnPropertyChanged(nameof(AverageTimeOfQuickSortingExecution));
+            }
+        }
+
+        public double AverageTimeOfShakerSortingExecution
+        {
+            get => _averageTimeOfShakerSortingExecution;
+            set
+            {
+                _averageTimeOfShakerSortingExecution = value;
+                OnPropertyChanged(nameof(AverageTimeOfShakerSortingExecution));
+            }
+        }
+
+        public double AverageTimeOfBogoSortingExecution
+        {
+            get => _averageTimeOfBogoSortingExecution;
+            set
+            {
+                _averageTimeOfBogoSortingExecution = value;
+                OnPropertyChanged(nameof(AverageTimeOfBogoSortingExecution));
+            }
+        }
+
+        // текст результата сортировки
+        private string _resultOfBubbleSorting;
+        private string _resultOfInsertionSorting;
+        private string _resultOfQuickSorting;
+        private string _resultOfShakerSorting;
+        private string _resultOfBogoSorting;
+
+        public string ResultOfBubbleSorting
+        {
+            get => _resultOfBubbleSorting;   
+            set
+            {
+                _resultOfBubbleSorting = value;
+                OnPropertyChanged(nameof(ResultOfBubbleSorting));
+            }
+        }
+        
+        public string ResultOfInsertionSorting
+        {
+            get => _resultOfInsertionSorting;
+            set
+            {
+                _resultOfInsertionSorting = value;
+                OnPropertyChanged(nameof(ResultOfInsertionSorting));
+            }
+        }
+        
+        public string ResultOfQuickSorting
+        {
+            get => _resultOfQuickSorting;
+            set
+            {
+                _resultOfQuickSorting = value;
+                OnPropertyChanged(nameof(ResultOfQuickSorting));
+            }
+        }
+
+        public string ResultOfShakerSorting
+        {
+            get => _resultOfShakerSorting;
+            set
+            {
+                _resultOfShakerSorting = value;
+                OnPropertyChanged(nameof(ResultOfShakerSorting));
+            }
+        }
+        
+        public string ResultOfBogoSorting
+        {
+            get => _resultOfBogoSorting;
+            set
+            {
+                _resultOfBogoSorting = value;
+                OnPropertyChanged(nameof(ResultOfBogoSorting));
+            }
+        }
+        
+        // выбор порядка сортировки
+        private bool _isAscendingSortChecked = true;
+        public bool IsAscendingSortChecked
+        {
+            get => _isAscendingSortChecked;
+            set
+            {
+                _isAscendingSortChecked = value;
+                OnPropertyChanged(nameof(IsAscendingSortChecked));
+            }
+        }
 
         // пользовательский ввод
+        private string _userInput;
         public string UserInput
         {
             get => _userInput;
@@ -142,17 +463,22 @@ namespace Sorting
         }
         
         // количество тестов
+        private int _countOfTests = 1;
         public int CountOfTests
         {
             get => _countOfTests;
             set
             {
-                _countOfTests = value;
-                OnPropertyChanged(nameof(CountOfTests));
+                if (value > 0)
+                {
+                    _countOfTests = value;
+                    OnPropertyChanged(nameof(CountOfTests));   
+                }
             }
         }
         
         // длина генерируемого массива
+        private int _arrayLength;
         public int ArrayLength
         {
             get => _arrayLength;
@@ -164,6 +490,7 @@ namespace Sorting
         }
         
         // минимальное значение генерируемого массива
+        private int _minValue;
         public int MinValue
         {
             get => _minValue;
@@ -175,6 +502,7 @@ namespace Sorting
         }
         
         // максимальное значение генерируемого массива
+        private int _maxValue;
         public int MaxValue
         {
             get => _maxValue;
@@ -206,16 +534,118 @@ namespace Sorting
             }
         }
 
-        private void Sort() {
-            int[] numbers = UserInput.Split(' ').Select(int.Parse).ToArray();
-
+        private void Sort()
+        {
+            ClearData();
+            
             if (IsBubbleSortingChecked)
             {
-                var result = SortingModel.BubbleSort(numbers, IsAscendingSortChecked, CountOfTests);
-                ResultOfBubbleSorting = string.Join(" ", result.Item1);
-                AverageCountOfBubbleSortingIterations = result.Item2;
-                AverageTimeOfBubbleSortingExecution = result.Item3;
+                double sumOfExecutionTime = 0;
+                
+                for (var iterationOfSorting = 0; iterationOfSorting < CountOfTests; ++iterationOfSorting)
+                {
+                    var numbers = UserInput.Split(' ').Select(int.Parse).ToArray();
+                    var result = SortingModel.BubbleSort(UserInput.Split(' ').Select(int.Parse).ToArray(), IsAscendingSortChecked);
+                    ResultOfBubbleSorting = string.Join(" ", result.Item1);
+                    sumOfExecutionTime += result.Item2;
+                }
+                
+                AverageCountOfBubbleSortingIterations = UserInput.Split(' ').Select(int.Parse).ToArray().Length * (UserInput.Split(' ').Select(int.Parse).ToArray().Length - 1);
+                AverageTimeOfBubbleSortingExecution = sumOfExecutionTime / CountOfTests;
             }
+            
+            if (IsInsertionSortingChecked)
+            {
+                var sumOfIterations = 0;
+                double sumOfExecutionTime = 0;
+                
+                for (var iterationOfSorting = 0; iterationOfSorting < CountOfTests; ++iterationOfSorting)
+                {
+                    var numbers = UserInput.Split(' ').Select(int.Parse).ToArray();
+                    var result = SortingModel.InsertionSort(numbers, IsAscendingSortChecked);
+                    ResultOfInsertionSorting = string.Join(" ", result.Item1);
+                    sumOfIterations += result.Item2;
+                    sumOfExecutionTime += result.Item3;
+                }
+
+                AverageCountOfInsertionSortingIterations = sumOfIterations / CountOfTests;
+                AverageTimeOfInsertionSortingExecution = sumOfExecutionTime / CountOfTests;
+            }
+            
+            if (IsQuickSortingChecked)
+            {
+                var sumOfIterations = 0;
+                double sumOfExecutionTime = 0;
+                
+                for (var iterationOfSorting = 0; iterationOfSorting < CountOfTests; ++iterationOfSorting)
+                {
+                    var numbers = UserInput.Split(' ').Select(int.Parse).ToArray();
+                    var result = SortingModel.QuickSort(numbers, IsAscendingSortChecked);
+                    ResultOfQuickSorting = string.Join(" ", result.Item1);
+                    sumOfIterations += result.Item2;
+                    sumOfExecutionTime += result.Item3;
+                }
+
+                AverageCountOfQuickSortingIterations = sumOfIterations / CountOfTests;
+                AverageTimeOfQuickSortingExecution = sumOfExecutionTime / CountOfTests;
+            }
+
+            if (IsShakerSortingChecked)
+            {
+                var sumOfIterations = 0;
+                double sumOfExecutionTime = 0;
+                
+                for (var iterationOfSorting = 0; iterationOfSorting < CountOfTests; ++iterationOfSorting)
+                {
+                    var numbers = UserInput.Split(' ').Select(int.Parse).ToArray();
+                    var result = SortingModel.ShakerSort(numbers, IsAscendingSortChecked);
+                    ResultOfShakerSorting = string.Join(" ", result.Item1);
+                    sumOfIterations += result.Item2;
+                    sumOfExecutionTime += result.Item3;
+                }
+
+                AverageCountOfShakerSortingIterations = sumOfIterations / CountOfTests;
+                AverageTimeOfShakerSortingExecution = sumOfExecutionTime / CountOfTests;
+            }
+            
+            if (IsBogoSortingChecked)
+            {
+                var sumOfIterations = 0;
+                double sumOfExecutionTime = 0;
+                
+                for (var iterationOfSorting = 0; iterationOfSorting < CountOfTests; ++iterationOfSorting)
+                {
+                    var numbers = UserInput.Split(' ').Select(int.Parse).ToArray();
+                    var result = SortingModel.BogoSort(numbers, IsAscendingSortChecked);
+                    ResultOfBogoSorting = string.Join(" ", result.Item1);
+                    sumOfIterations += result.Item2;
+                    sumOfExecutionTime += result.Item3;
+                }
+                
+                AverageCountOfBogoSortingIterations = sumOfIterations / CountOfTests;
+                AverageTimeOfBogoSortingExecution = sumOfExecutionTime / CountOfTests;
+            }
+        }
+
+        private void ClearData()
+        {
+            ResultOfBubbleSorting = "";
+            ResultOfInsertionSorting = "";
+            ResultOfQuickSorting = "";
+            ResultOfShakerSorting = "";
+            ResultOfBogoSorting = "";
+            
+            AverageCountOfBubbleSortingIterations = 0;
+            AverageCountOfInsertionSortingIterations = 0;
+            AverageCountOfQuickSortingIterations = 0;
+            AverageCountOfShakerSortingIterations = 0;
+            AverageCountOfBogoSortingIterations = 0;
+            
+            AverageTimeOfBubbleSortingExecution = 0;
+            AverageTimeOfInsertionSortingExecution = 0;
+            AverageTimeOfQuickSortingExecution = 0;
+            AverageTimeOfShakerSortingExecution = 0;
+            AverageTimeOfBogoSortingExecution = 0;
         }
 
         // Команды для вызова метода
