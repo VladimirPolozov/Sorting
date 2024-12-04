@@ -595,7 +595,7 @@ namespace Sorting
             var openFileDialog = new Microsoft.Win32.OpenFileDialog
             {
                 // Filter = "Excel Files (*.xlsx)|*.xlsx|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt",
-                Filter = "CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt",
+                Filter = "All Files|(*.*)|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt",
                 Title = "Выберите файл для загрузки"
             };
 
