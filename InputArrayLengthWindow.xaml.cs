@@ -12,6 +12,11 @@ namespace Sorting
         {
             InitializeComponent();
         }
+        
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+        }
 
         private void Accept_Click(object sender, RoutedEventArgs e)
         {

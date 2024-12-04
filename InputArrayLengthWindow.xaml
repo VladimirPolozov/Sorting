@@ -1,8 +1,6 @@
 ﻿<Window x:Class="Sorting.InputArrayLengthWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:Sorting"
         Title="Введите длину массива" Height="250" Width="250">
     <Grid>
         <StackPanel Width="200px" VerticalAlignment="Center">
@@ -17,7 +15,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <!-- <Button Margin="0 0 5px 0" Grid.Column="0" IsCancel="True" FontWeight="Medium" Background="#24A1DE" Foreground="White" BorderThickness="0">Отмена</Button> -->
+                <Button Margin="0 0 5px 0" Grid.Column="0" Click="Cancel_Click" IsCancel="True" FontWeight="Medium" Background="#24A1DE" Foreground="White" BorderThickness="0">Отмена</Button>
                 <Button Margin="5px 0 0 0" Grid.Column="1" Click="Accept_Click"  IsDefault="True" FontWeight="Medium" Background="#24A1DE" Foreground="White" BorderThickness="0">OK</Button>
             </Grid>
         </StackPanel>

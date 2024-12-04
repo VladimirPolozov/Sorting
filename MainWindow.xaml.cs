@@ -1,14 +1,15 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 using System.Diagnostics;
+using System.Globalization;
+using System.Windows;
 
 
 namespace Sorting
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public MainWindow()
         {
@@ -18,44 +19,57 @@ namespace Sorting
     }
 
 
-    public class SortingModel
+    public static class SortingModel
     {
         // Сортировка пузырьком
-        public static (int[], double) BubbleSort(int[] array, bool isAscendingSortChecked)
+        public static (MixedValue[], int, double) BubbleSort(MixedValue[] array, bool isAscendingSortChecked)
         {
-            var stopwatch = Stopwatch.StartNew();
-            for (var i = 0; i < array.Length; ++i)
+            if (IsSorted(array, isAscendingSortChecked))
             {
-                for (var j = 0; j < array.Length - 1; ++j)
+                return (array, 0, 0);
+            }
+            
+            var stopwatch = Stopwatch.StartNew();
+            var iterations = 0;
+            
+            for (var i = 0; i < array.Length - 1; i++)
+            {
+                for (var j = 0; j < array.Length - i - 1; j++)
                 {
-                    if (array[j] > array[j + 1] && isAscendingSortChecked)
+                    iterations++;
+                    var needSwap = isAscendingSortChecked
+                        ? array[j].CompareTo(array[j + 1]) > 0
+                        : array[j].CompareTo(array[j + 1]) < 0;
+
+                    if (needSwap)
                     {
                         (array[j], array[j + 1]) = (array[j + 1], array[j]);
                     }
-                    else
-                    {
-                        if (array[j] < array[j + 1] && !isAscendingSortChecked)
-                        {
-                            (array[j], array[j + 1]) = (array[j + 1], array[j]);
-                        }
-                    }
                 }
             }
-            
+
             stopwatch.Stop();
-            return (array, new TimeSpan(stopwatch.ElapsedTicks).TotalMilliseconds);
+            return (array, iterations, stopwatch.Elapsed.TotalMilliseconds);
         }
         
         // Сортировка вставками
-        public static (int[], int, double) InsertionSort(int[] array, bool isAscendingSortChecked)
+        public static (MixedValue[], int, double) InsertionSort(MixedValue[] array, bool isAscendingSortChecked)
         {
+            if (IsSorted(array, isAscendingSortChecked))
+            {
+                return (array, 0, 0);
+            }
+            
             var stopwatch = Stopwatch.StartNew();
             var iterations = 0;
+            
             for (var i = 1; i < array.Length; ++i)
             {
                 var current = array[i];
                 var j = i - 1;
-                while (j >= 0 && (isAscendingSortChecked ? array[j] > current : array[j] < current))
+                while (j >= 0 && (isAscendingSortChecked 
+                           ? array[j].CompareTo(current) > 0 
+                           : array[j].CompareTo(current) < 0))
                 {
                     ++iterations;
                     array[j + 1] = array[j];
@@ -69,18 +83,19 @@ namespace Sorting
         }
         
         // Быстрая сортировка
-        public static (int[], int, double) QuickSort(int[] array, bool isAscendingSortChecked)
+        public static (MixedValue[], int, double) QuickSort(MixedValue[] array, bool isAscendingSortChecked)
         {
             var stopwatch = Stopwatch.StartNew();
             var iterations = 0;
+
             QuickSorting(array, 0, array.Length - 1, isAscendingSortChecked, ref iterations);
-            
+
             stopwatch.Stop();
             return (array, iterations, new TimeSpan(stopwatch.ElapsedTicks).TotalMilliseconds);
         }
-        
+
         // Метод быстрой сортировки
-        private static void QuickSorting(int[] array, int left, int right, bool isAscendingSortChecked, ref int iterations)
+        private static void QuickSorting(MixedValue[] array, int left, int right, bool isAscendingSortChecked, ref int iterations)
         {
             if (left < right)
             {
@@ -89,74 +104,82 @@ namespace Sorting
                 QuickSorting(array, pivot + 1, right, isAscendingSortChecked, ref iterations);
             }
         }
-        
+
         // Метод разделения массива
-        private static int Partition(int[] array, int left, int right, bool isAscendingSortChecked, ref int iterations)
+        private static int Partition(MixedValue[] array, int left, int right, bool isAscendingSortChecked, ref int iterations)
         {
             var pivot = array[left];
+
             while (true)
             {
-                while (isAscendingSortChecked ? array[left] < pivot : array[left] > pivot)
+                while (isAscendingSortChecked
+                           ? array[left].CompareTo(pivot) < 0
+                           : array[left].CompareTo(pivot) > 0)
                 {
                     ++left;
                     ++iterations;
                 }
-                while (isAscendingSortChecked ? array[right] > pivot : array[right] < pivot)
+
+                while (isAscendingSortChecked
+                           ? array[right].CompareTo(pivot) > 0
+                           : array[right].CompareTo(pivot) < 0)
                 {
                     --right;
                     ++iterations;
                 }
+
                 if (left >= right)
                 {
                     return right;
                 }
+
                 (array[left], array[right]) = (array[right], array[left]);
                 ++iterations;
+
                 ++left;
                 --right;
             }
         }
         
         // Шейкерная сортировка
-        public static (int[], int, double) ShakerSort(int[] array, bool isAscendingSortChecked)
+        public static (MixedValue[], int, double) ShakerSort(MixedValue[] array, bool isAscendingSortChecked)
         {
+            if (IsSorted(array, isAscendingSortChecked))
+            {
+                return (array, 0, 0);
+            }
+            
             var stopwatch = Stopwatch.StartNew();
             var iterations = 0;
-            bool swapped;
-            int start = 0;
-            int end = array.Length - 1;
 
-            do
+            var left = 0;
+            var right = array.Length - 1;
+            while (left <= right)
             {
-                swapped = false;
-
-                // Проход слева направо
-                for (int i = start; i < end; ++i)
-                {
-                    if ((array[i] > array[i + 1] && isAscendingSortChecked) || 
-                        (array[i] < array[i + 1] && !isAscendingSortChecked))
-                    {
-                        (array[i], array[i + 1]) = (array[i + 1], array[i]);
-                        swapped = true;
-                        ++iterations;
-                    }
-                }
-                --end;
-
                 // Проход справа налево
-                for (int i = end; i > start; --i)
+                for (var i = right; i > left; --i)
                 {
-                    if ((array[i - 1] > array[i] && isAscendingSortChecked) || 
-                        (array[i - 1] < array[i] && !isAscendingSortChecked))
+                    if ((isAscendingSortChecked && array[i - 1].CompareTo(array[i]) > array[i].CompareTo(array[i - 1])) ||
+                        (!isAscendingSortChecked && array[i - 1].CompareTo(array[i]) < array[i].CompareTo(array[i - 1])))
                     {
                         (array[i - 1], array[i]) = (array[i], array[i - 1]);
-                        swapped = true;
                         ++iterations;
                     }
                 }
-                ++start;
+                ++left;
+
+                // Проход слева направо
+                for (var i = left; i < right; ++i)
+                {
+                    if ((isAscendingSortChecked && array[i].CompareTo(array[i + 1]) > array[i + 1].CompareTo(array[i])) ||
+                        (!isAscendingSortChecked && array[i].CompareTo(array[i + 1]) < array[i + 1].CompareTo(array[i])))
+                    {
+                        (array[i], array[i + 1]) = (array[i + 1], array[i]);
+                        ++iterations;
+                    }
+                }
+                --right;
             }
-            while (swapped);
 
             stopwatch.Stop();
             return (array, iterations, new TimeSpan(stopwatch.ElapsedTicks).TotalMilliseconds);
@@ -164,10 +187,16 @@ namespace Sorting
 
 
         // Bogo-сортировка
-        public static (int[], int, double) BogoSort(int[] array, bool isAscendingSortChecked)
+        public static (MixedValue[], int, double) BogoSort(MixedValue[] array, bool isAscendingSortChecked)
         {
+            if (IsSorted(array, isAscendingSortChecked))
+            {
+                return (array, 0, 0);
+            }
+            
             var stopwatch = Stopwatch.StartNew();
             var iterations = 0;
+            
             while (!IsSorted(array, isAscendingSortChecked))
             {
                 ++iterations;
@@ -183,13 +212,26 @@ namespace Sorting
         }
         
         // Метод проверки отсортированности массива
-        private static bool IsSorted(int[] array, bool isAscendingSortChecked)
+        private static bool IsSorted(MixedValue[] array, bool isAscendingSortChecked)
         {
             for (var i = 0; i < array.Length - 1; ++i)
             {
-                if (isAscendingSortChecked ? array[i] > array[i + 1] : array[i] < array[i + 1])
+                var comparisonResult = array[i].CompareTo(array[i + 1]);
+                if (isAscendingSortChecked)
                 {
-                    return false;
+                    // Если по возрастанию, проверяем, что текущий элемент больше следующего
+                    if (comparisonResult > 0)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    // Если по убыванию, проверяем, что текущий элемент меньше следующего
+                    if (comparisonResult < 0)
+                    {
+                        return false;
+                    }
                 }
             }
 
@@ -197,7 +239,7 @@ namespace Sorting
         }
         
         // Метод перемешивания массива
-        private static void Shuffle(int[] array)
+        private static void Shuffle(MixedValue[] array)
         {
             var random = new Random();
             for (var i = 0; i < array.Length; ++i)
@@ -208,7 +250,7 @@ namespace Sorting
         }
     }
 
-        public class SortingViewModel : INotifyPropertyChanged
+    public class SortingViewModel : INotifyPropertyChanged
     {
         // чек-боксы выбора методов сортировок
         private bool _isBubbleSortingChecked;
@@ -449,6 +491,18 @@ namespace Sorting
                 OnPropertyChanged(nameof(IsAscendingSortChecked));
             }
         }
+        
+        // выбор типа данных сортировки
+        private bool _isNumbersSortingChecked = true;
+        public bool IsNumbersSortingChecked
+        {
+            get => _isNumbersSortingChecked;
+            set
+            {
+                _isNumbersSortingChecked = value;
+                OnPropertyChanged(nameof(IsNumbersSortingChecked));
+            }
+        }
 
         // пользовательский ввод
         private string _userInput;
@@ -533,100 +587,52 @@ namespace Sorting
                 UserInput = string.Join(" ", numbers);
             }
         }
-
-        private void Sort()
+        
+        // Выгрузка данных из файла в текстовое поле
+        private void LoadData()
         {
-            ClearData();
-            
-            if (IsBubbleSortingChecked)
+            // Создание диалогового окна выбора файла
+            var openFileDialog = new Microsoft.Win32.OpenFileDialog
             {
-                double sumOfExecutionTime = 0;
-                
-                for (var iterationOfSorting = 0; iterationOfSorting < CountOfTests; ++iterationOfSorting)
-                {
-                    var numbers = UserInput.Split(' ').Select(int.Parse).ToArray();
-                    var result = SortingModel.BubbleSort(UserInput.Split(' ').Select(int.Parse).ToArray(), IsAscendingSortChecked);
-                    ResultOfBubbleSorting = string.Join(" ", result.Item1);
-                    sumOfExecutionTime += result.Item2;
-                }
-                
-                AverageCountOfBubbleSortingIterations = UserInput.Split(' ').Select(int.Parse).ToArray().Length * (UserInput.Split(' ').Select(int.Parse).ToArray().Length - 1);
-                AverageTimeOfBubbleSortingExecution = sumOfExecutionTime / CountOfTests;
-            }
-            
-            if (IsInsertionSortingChecked)
-            {
-                var sumOfIterations = 0;
-                double sumOfExecutionTime = 0;
-                
-                for (var iterationOfSorting = 0; iterationOfSorting < CountOfTests; ++iterationOfSorting)
-                {
-                    var numbers = UserInput.Split(' ').Select(int.Parse).ToArray();
-                    var result = SortingModel.InsertionSort(numbers, IsAscendingSortChecked);
-                    ResultOfInsertionSorting = string.Join(" ", result.Item1);
-                    sumOfIterations += result.Item2;
-                    sumOfExecutionTime += result.Item3;
-                }
+                // Filter = "Excel Files (*.xlsx)|*.xlsx|CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt",
+                Filter = "CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt",
+                Title = "Выберите файл для загрузки"
+            };
 
-                AverageCountOfInsertionSortingIterations = sumOfIterations / CountOfTests;
-                AverageTimeOfInsertionSortingExecution = sumOfExecutionTime / CountOfTests;
-            }
-            
-            if (IsQuickSortingChecked)
+            // Если пользователь выбрал файл
+            if (openFileDialog.ShowDialog() == true)
             {
-                var sumOfIterations = 0;
-                double sumOfExecutionTime = 0;
-                
-                for (var iterationOfSorting = 0; iterationOfSorting < CountOfTests; ++iterationOfSorting)
+                try
                 {
-                    var numbers = UserInput.Split(' ').Select(int.Parse).ToArray();
-                    var result = SortingModel.QuickSort(numbers, IsAscendingSortChecked);
-                    ResultOfQuickSorting = string.Join(" ", result.Item1);
-                    sumOfIterations += result.Item2;
-                    sumOfExecutionTime += result.Item3;
+                    var filePath = openFileDialog.FileName;
+                    var fileContent = "";
+
+                    // Чтение содержимого файла в зависимости от формата
+                    if (filePath.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // fileContent = LoadExcelFile(filePath);
+                    }
+                    else if (filePath.EndsWith(".csv", StringComparison.OrdinalIgnoreCase) ||
+                             filePath.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+                    {
+                        fileContent = System.IO.File.ReadAllText(filePath);
+                    }
+                    else
+                    {
+                        throw new NotSupportedException("Неподдерживаемый формат файла.");
+                    }
+
+                    // Обновляем текстовое поле UserInput
+                    UserInput = string.Join(" ", fileContent.Split(new[] { ',', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries));
                 }
-
-                AverageCountOfQuickSortingIterations = sumOfIterations / CountOfTests;
-                AverageTimeOfQuickSortingExecution = sumOfExecutionTime / CountOfTests;
-            }
-
-            if (IsShakerSortingChecked)
-            {
-                var sumOfIterations = 0;
-                double sumOfExecutionTime = 0;
-                
-                for (var iterationOfSorting = 0; iterationOfSorting < CountOfTests; ++iterationOfSorting)
+                catch (Exception ex)
                 {
-                    var numbers = UserInput.Split(' ').Select(int.Parse).ToArray();
-                    var result = SortingModel.ShakerSort(numbers, IsAscendingSortChecked);
-                    ResultOfShakerSorting = string.Join(" ", result.Item1);
-                    sumOfIterations += result.Item2;
-                    sumOfExecutionTime += result.Item3;
+                    // Обработка ошибок
+                    System.Windows.MessageBox.Show($"Ошибка при загрузке файла: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-
-                AverageCountOfShakerSortingIterations = sumOfIterations / CountOfTests;
-                AverageTimeOfShakerSortingExecution = sumOfExecutionTime / CountOfTests;
-            }
-            
-            if (IsBogoSortingChecked)
-            {
-                var sumOfIterations = 0;
-                double sumOfExecutionTime = 0;
-                
-                for (var iterationOfSorting = 0; iterationOfSorting < CountOfTests; ++iterationOfSorting)
-                {
-                    var numbers = UserInput.Split(' ').Select(int.Parse).ToArray();
-                    var result = SortingModel.BogoSort(numbers, IsAscendingSortChecked);
-                    ResultOfBogoSorting = string.Join(" ", result.Item1);
-                    sumOfIterations += result.Item2;
-                    sumOfExecutionTime += result.Item3;
-                }
-                
-                AverageCountOfBogoSortingIterations = sumOfIterations / CountOfTests;
-                AverageTimeOfBogoSortingExecution = sumOfExecutionTime / CountOfTests;
             }
         }
-
+        
         private void ClearData()
         {
             ResultOfBubbleSorting = "";
@@ -648,18 +654,144 @@ namespace Sorting
             AverageTimeOfBogoSortingExecution = 0;
         }
 
+        private void Sort()
+        {
+            ClearData();
+            
+            if (IsBubbleSortingChecked)
+            {
+                ExecuteSorting(
+                    SortingModel.BubbleSort,
+                    UserInput,
+                    CountOfTests,
+                    IsAscendingSortChecked,
+                    out var resultString,
+                    out var averageTime,
+                    out var averageIterations);
+                
+                ResultOfBubbleSorting = resultString;
+                AverageTimeOfBubbleSortingExecution = averageTime;
+                AverageCountOfBubbleSortingIterations = averageIterations;
+            }
+            
+            if (IsInsertionSortingChecked)
+            {
+                ExecuteSorting(
+                    SortingModel.InsertionSort,
+                    UserInput,
+                    CountOfTests,
+                    IsAscendingSortChecked,
+                    out var resultString,
+                    out var averageTime,
+                    out var averageIterations);
+                
+                ResultOfInsertionSorting = resultString;
+                AverageTimeOfInsertionSortingExecution = averageTime;
+                AverageCountOfInsertionSortingIterations = averageIterations;
+            }
+            
+            if (IsQuickSortingChecked)
+            {
+                ExecuteSorting(
+                    SortingModel.QuickSort,
+                    UserInput,
+                    CountOfTests,
+                    IsAscendingSortChecked,
+                    out var resultString,
+                    out var averageTime,
+                    out var averageIterations);
+                
+                ResultOfQuickSorting = resultString;
+                AverageTimeOfQuickSortingExecution = averageTime;
+                AverageCountOfQuickSortingIterations = averageIterations;
+            }
+
+            if (IsShakerSortingChecked)
+            {
+                ExecuteSorting(
+                    SortingModel.ShakerSort,
+                    UserInput,
+                    CountOfTests,
+                    IsAscendingSortChecked,
+                    out var resultString,
+                    out var averageTime,
+                    out var averageIterations);
+                
+                ResultOfShakerSorting = resultString;
+                AverageTimeOfShakerSortingExecution = averageTime;
+                AverageCountOfShakerSortingIterations = averageIterations;
+            }
+            
+            if (IsBogoSortingChecked)
+            {
+                ExecuteSorting(
+                    SortingModel.BogoSort,
+                    UserInput,
+                    CountOfTests,
+                    IsAscendingSortChecked,
+                    out var resultString,
+                    out var averageTime,
+                    out var averageIterations);
+                
+                ResultOfBogoSorting = resultString;
+                AverageTimeOfBogoSortingExecution = averageTime;
+                AverageCountOfBogoSortingIterations = averageIterations;
+            }
+        }
+        
+        private void ExecuteSorting(
+            SortingMethod sortingMethod,
+            string userInput,
+            int countOfTests,
+            bool isAscendingSortChecked,
+            out string resultString,
+            out double averageTime,
+            out int averageIterations)
+        {
+            var sumOfIterations = 0;
+            var sumOfExecutionTime = 0.0;
+            var mixedArray = Array.Empty<MixedValue>();
+
+            try
+            {
+                for (var iterationOfSorting = 0; iterationOfSorting < countOfTests; ++iterationOfSorting)
+                {
+                    mixedArray = UserInput.Split(' ')
+                        .Select(value => new MixedValue(value))
+                        .ToArray();
+
+                    var result = sortingMethod(mixedArray, isAscendingSortChecked);
+                    sumOfIterations += result.Item2;
+                    sumOfExecutionTime += result.Item3;
+                }
+                
+                resultString = string.Join(" ", mixedArray.Select(m => m.ToString()));;
+                averageIterations = sumOfIterations / countOfTests;
+                averageTime = sumOfExecutionTime / countOfTests;
+            }
+            catch
+            {
+                resultString = "Некорректный ввод";
+                averageIterations = 0;
+                averageTime = 0;
+            }
+        }
+        
+        private delegate (MixedValue[], int, double) SortingMethod(MixedValue[] array, bool isAscending);
+
         // Команды для вызова метода
         public ICommand SortCommand { get; }
         public ICommand GenerateCommand { get; }
+        public ICommand ClearCommand { get; }
+        public ICommand LoadDataCommand { get; }
 
         public SortingViewModel()
         {
-            // очистить данные
-            // ClearData();
-
             // Привязываем команды к методу
             SortCommand = new RelayCommand(_ => Sort());
             GenerateCommand = new RelayCommand(_ => Generate());
+            ClearCommand = new RelayCommand(_ => ClearData());
+            LoadDataCommand = new RelayCommand(_ => LoadData());
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -685,5 +817,43 @@ namespace Sorting
 
         public event EventHandler CanExecuteChanged;
         public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
+    public class MixedValue : IComparable<MixedValue>
+    {
+        public double? NumericValue { get; }
+        public string StringValue { get; }
+        public bool IsNumeric => NumericValue.HasValue;
+
+        public MixedValue(string value)
+        {
+            if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var number))
+            {
+                NumericValue = number;
+            }
+            else
+            {
+                StringValue = value;
+            }
+        }
+
+        public int CompareTo(MixedValue other)
+        {
+            if (this.IsNumeric && other.IsNumeric)
+            {
+                return this.NumericValue.Value.CompareTo(other.NumericValue.Value);
+            }
+            if (!this.IsNumeric && !other.IsNumeric)
+            {
+                return string.Compare(this.StringValue, other.StringValue, StringComparison.Ordinal);
+            }
+            // Числа идут перед строками
+            return this.IsNumeric ? -1 : 1;
+        }
+
+        public override string ToString()
+        {
+            return IsNumeric ? NumericValue.ToString() : StringValue;
+        }
     }
 }
